@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="30명 팀원이 함께 사용하는 교육 프로젝트 협업 대시보드" />
+  <title>교육 프로젝트 협업 대시보드</title>
+
+  <!--
+    ============================================================
+    [폰트]
+    - 나눔고딕을 Google Fonts에서 불러옵니다.
+    - 사내망/오프라인 환경에서 외부 폰트 접근이 제한될 경우
+      브라우저 기본 고딕체(sans-serif)로 자동 대체됩니다.
+    ============================================================
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* =========================================================
+       1. 컬러 / 공통 변수
+       ---------------------------------------------------------
+       요청사항에 맞춰 다크그린 + 보조 컬러 2가지만 사용합니다.
+       - Dark Green : #12372A
+       - Sage       : #A3B18A
+       - Warm Ivory : #F5F1E8
+       ========================================================= */
+    :root {
+      --dark-green: #12372A;
+      --sage: #A3B18A;
+      --ivory: #F5F1E8;
+
+      /* 위 3색의 투명도/명암만 활용합니다. */
+      --green-92: rgba(18, 55, 42, 0.92);
+      --green-72: rgba(18, 55, 42, 0.72);
+      --green-18: rgba(18, 55, 42, 0.18);
+      --green-10: rgba(18, 55, 42, 0.10);
+      --sage-28: rgba(163, 177, 138, 0.28);
+      --sage-16: rgba(163, 177, 138, 0.16);
+      --ivory-86: rgba(245, 241, 232, 0.86);
+
+      --radius-lg: 22px;
+      --radius-md: 14px;
+      --shadow: 0 18px 45px rgba(18, 55, 42, 0.14);
+      --shadow-soft: 0 10px 28px rgba(18, 55, 42, 0.10);
+      --content-width: 1240px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: "Nanum Gothic", "Malgun Gothic", sans-serif;
+      color: var(--dark-green);
+      background:
+        radial-gradient(circle at top right, var(--sage-28), transparent 28%),
+        var(--ivory);
+      line-height: 1.65;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    img,
+    svg,
+    canvas {
+      max-width: 100%;
+      display: block;
+    }
+
+    .container {
+      width: min(calc(100% - 40px), var(--content-width));
+      margin: 0 auto;
+    }
+
+    /* =========================================================
+       2. 상단 네비게이션
+       ========================================================= */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      backdrop-filter: blur(14px);
+      background: rgba(245, 241, 232, 0.92);
+      border-bottom: 1px solid var(--green-10);
+    }
+
+    .nav {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: var(--dark-green);
+      color: var(--ivory);
+      font-weight: 800;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      display: block;
+      padding: 10px 13px;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      transition: 0.2s ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      background: var(--dark-green);
+      color: var(--ivory);
+    }
+
+    .menu-button {
+      display: none;
+      border: 0;
+      background: var(--dark-green);
+      color: var(--ivory);
+      border-radius: 10px;
+      padding: 9px 12px;
+      cursor: pointer;
+    }
+
+    /* =========================================================
+       3. Hero
+       ========================================================= */
+    .hero {
+      padding: 78px 0 38px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 34px;
+      align-items: stretch;
+    }
+
+    .hero-copy,
+    .hero-panel {
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-copy {
+      background: var(--dark-green);
+      color: var(--ivory);
+      padding: 56px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-copy::after {
+      content: "";
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      right: -120px;
+      bottom: -120px;
+      background: var(--sage-16);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+      padding: 8px 12px;
+      border: 1px solid rgba(245, 241, 232, 0.25);
+      border-radius: 999px;
+      font-size: 0.83rem;
+      font-weight: 700;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.1rem, 4vw, 4.2rem);
+      line-height: 1.15;
+      letter-spacing: -0.055em;
+      margin-bottom: 20px;
+      max-width: 830px;
+    }
+
+    .hero p {
+      max-width: 760px;
+      color: rgba(245, 241, 232, 0.82);
+      font-size: 1rem;
+    }
+
+    .hero-actions {
+      margin-top: 28px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 46px;
+      padding: 0 17px;
+      border: 0;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 800;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .button.primary {
+      background: var(--sage);
+      color: var(--dark-green);
+    }
+
+    .button.secondary {
+      background: transparent;
+      color: var(--ivory);
+      border: 1px solid rgba(245, 241, 232, 0.35);
+    }
+
+    .button.dark {
+      background: var(--dark-green);
+      color: var(--ivory);
+    }
+
+    .hero-panel {
+      background: rgba(245, 241, 232, 0.78);
+      border: 1px solid var(--green-10);
+      padding: 34px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .hero-panel strong {
+      font-size: 2.6rem;
+      letter-spacing: -0.04em;
+    }
+
+    .hero-panel .mini-label {
+      font-size: 0.84rem;
+      font-weight: 700;
+      opacity: 0.72;
+    }
+
+    .team-dots {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 7px;
+      margin-top: 20px;
+    }
+
+    .team-dot {
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: var(--sage);
+      opacity: 0.42;
+      transform: scale(0.88);
+      transition: 0.25s ease;
+    }
+
+    .team-dot:hover {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+
+    /* =========================================================
+       4. 공통 섹션 / 카드
+       ========================================================= */
+    .section {
+      padding: 48px 0;
+      scroll-margin-top: 82px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 22px;
+    }
+
+    .section-kicker {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--green-72);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .section h2 {
+      font-size: clamp(1.65rem, 2.5vw, 2.55rem);
+      letter-spacing: -0.045em;
+      line-height: 1.25;
+    }
+
+    .section-desc {
+      max-width: 680px;
+      font-size: 0.94rem;
+      opacity: 0.78;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      background: rgba(245, 241, 232, 0.84);
+      border: 1px solid var(--green-10);
+      border-radius: var(--radius-md);
+      padding: 26px;
+      box-shadow: var(--shadow-soft);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+      font-size: 1.16rem;
+      letter-spacing: -0.03em;
+    }
+
+    .card p {
+      font-size: 0.92rem;
+      opacity: 0.82;
+    }
+
+    .resource-card {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      min-height: 260px;
+    }
+
+    .resource-meta {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: var(--sage-28);
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .resource-actions {
+      margin-top: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .notice {
+      margin-top: 18px;
+      border-left: 4px solid var(--sage);
+      background: var(--sage-16);
+      padding: 16px 18px;
+      border-radius: 0 12px 12px 0;
+      font-size: 0.89rem;
+    }
+
+    /* =========================================================
+       5. 진행률 / 그래프
+       ========================================================= */
+    .progress-layout {
+      display: grid;
+      grid-template-columns: 0.78fr 1.22fr;
+      gap: 18px;
+    }
+
+    .progress-card {
+      min-height: 340px;
+    }
+
+    .progress-number {
+      font-size: 4.5rem;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.07em;
+      margin: 18px 0 8px;
+    }
+
+    .progress-track {
+      height: 14px;
+      background: var(--green-10);
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 24px 0 12px;
+    }
+
+    .progress-fill {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--dark-green);
+      transition: width 1.2s cubic-bezier(.2,.8,.2,1);
+    }
+
+    .chart-wrap {
+      height: 280px;
+      position: relative;
+    }
+
+    #progressChart {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* =========================================================
+       6. Gantt Chart
+       ========================================================= */
+    .gantt-shell {
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+
+    .gantt {
+      min-width: 980px;
+      display: grid;
+      grid-template-columns: 210px repeat(12, minmax(64px, 1fr));
+      border: 1px solid var(--green-10);
+      border-radius: 14px;
+      overflow: hidden;
+      background: var(--ivory);
+    }
+
+    .gantt-cell {
+      min-height: 48px;
+      border-right: 1px solid var(--green-10);
+      border-bottom: 1px solid var(--green-10);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      font-size: 0.79rem;
+      position: relative;
+    }
+
+    .gantt-head {
+      font-weight: 800;
+      background: var(--sage-16);
+    }
+
+    .gantt-task-name {
+      justify-content: flex-start;
+      padding-left: 14px;
+      font-weight: 800;
+    }
+
+    .gantt-bar {
+      position: absolute;
+      left: 6px;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 22px;
+      border-radius: 8px;
+      background: var(--dark-green);
+      opacity: 0.9;
+      color: var(--ivory);
+      display: grid;
+      place-items: center;
+      font-size: 0.7rem;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .gantt-bar.done {
+      background: var(--sage);
+      color: var(--dark-green);
+    }
+
+    .gantt-today {
+      box-shadow: inset 0 0 0 2px var(--sage);
+    }
+
+    /* =========================================================
+       7. 업무 원칙 / 푸터
+       ========================================================= */
+    .guide-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .guide-number {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: var(--dark-green);
+      color: var(--ivory);
+      font-weight: 800;
+      margin-bottom: 18px;
+    }
+
+    footer {
+      margin-top: 48px;
+      padding: 36px 0 44px;
+      background: var(--dark-green);
+      color: var(--ivory);
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .footer-note {
+      color: rgba(245, 241, 232, 0.72);
+      font-size: 0.84rem;
+    }
+
+    /* =========================================================
+       8. 스크롤 등장 효과
+       ========================================================= */
+    .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* =========================================================
+       9. 반응형
+       ========================================================= */
+    @media (max-width: 920px) {
+      .hero-grid,
+      .progress-layout,
+      .cards,
+      .guide-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-copy {
+        padding: 42px 30px;
+      }
+
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 72px;
+        left: 20px;
+        right: 20px;
+        flex-direction: column;
+        align-items: stretch;
+        padding: 12px;
+        border-radius: 14px;
+        background: var(--ivory);
+        box-shadow: var(--shadow);
+      }
+
+      .nav-links.open {
+        display: flex;
+      }
+
+      .menu-button {
+        display: inline-flex;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .container {
+        width: min(calc(100% - 24px), var(--content-width));
+      }
+
+      .hero {
+        padding-top: 48px;
+      }
+
+      .hero-copy {
+        padding: 34px 24px;
+      }
+
+      .hero-panel,
+      .card {
+        padding: 22px;
+      }
+
+      .section {
+        padding: 34px 0;
+      }
+
+      .progress-number {
+        font-size: 3.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ========================================================
+       상단 고정 메뉴
+       ======================================================== -->
+  <header class="topbar">
+    <div class="container nav">
+      <a class="brand" href="#home" aria-label="대시보드 홈으로 이동">
+        <span class="brand-mark">P</span>
+        <span>Project Dashboard</span>
+      </a>
+
+      <button class="menu-button" id="menuButton" aria-label="모바일 메뉴 열기">메뉴</button>
+
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#resources">공유자료</a></li>
+        <li><a href="#progress">진행률</a></li>
+        <li><a href="#schedule">간트차트</a></li>
+        <li><a href="#guide">협업가이드</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main id="home">
+    <!-- ======================================================
+         HERO
+         ====================================================== -->
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy reveal">
+          <div class="eyebrow">30명 공동 프로젝트 · Google Workspace 연동</div>
+          <h1>자료는 한곳에서,<br>진행 상황은 한눈에.</h1>
+          <p>
+            회의록, 교육 자료, 파일 공유, 일정과 프로젝트 진행률을 한 페이지에서 확인하는
+            팀 협업용 대시보드입니다. GitHub Pages에 게시하여 팀원 30명과 동일한 화면을 공유할 수 있습니다.
+          </p>
+
+          <div class="hero-actions">
+            <a class="button primary"
+               href="https://docs.google.com/document/d/1yYhHOHUtDgIicDYtL3Ij-D7wepc3pPPAtvQnNLqnDZo/edit?usp=sharing"
+               target="_blank" rel="noopener noreferrer">
+              회의록 바로가기
+            </a>
+
+            <a class="button secondary"
+               href="https://drive.google.com/drive/u/0/folders/1ko5T4wsWk9Le2ggKQ6z-Yv3ONaByk4fl"
+               target="_blank" rel="noopener noreferrer">
+              공유폴더 열기
+            </a>
+          </div>
+        </div>
+
+        <aside class="hero-panel reveal">
+          <div>
+            <div class="mini-label">PROJECT MEMBERS</div>
+            <strong>30명</strong>
+            <p>동일한 문서와 일정 기준으로 협업합니다.</p>
+          </div>
+
+          <!-- 30명 시각화: 팀 인원수가 바뀌면 JS의 memberCount 값을 수정하세요. -->
+          <div class="team-dots" id="teamDots" aria-label="프로젝트 참여자 30명"></div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ======================================================
+         공유 자료
+         ====================================================== -->
+    <section class="section" id="resources">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <div class="section-kicker">Shared Resources</div>
+            <h2>프로젝트 핵심 공유 자료</h2>
+          </div>
+          <p class="section-desc">
+            회의록은 대표 Google 문서에서 통합 관리하고, 교육 중 생성되는 파일은
+            지정된 Google Drive 폴더를 통해 주고받습니다.
+          </p>
+        </div>
+
+        <div class="cards">
+          <article class="card resource-card reveal">
+            <div>
+              <div class="resource-meta">
+                <span class="tag">Google Docs</span>
+                <span class="tag">회의록</span>
+              </div>
+              <h3 style="margin-top:16px;">프로젝트 대표 회의록</h3>
+              <p>
+                프로젝트 회의 내용, 결정사항, 담당자, 다음 액션을 한 문서에 누적 관리합니다.
+                회의 직후 담당자가 내용을 업데이트하고 모든 팀원이 동일 문서를 기준으로 확인합니다.
+              </p>
+            </div>
+            <div class="resource-actions">
+              <a class="button dark"
+                 href="https://docs.google.com/document/d/1yYhHOHUtDgIicDYtL3Ij-D7wepc3pPPAtvQnNLqnDZo/edit?usp=sharing"
+                 target="_blank" rel="noopener noreferrer">
+                회의록 열기
+              </a>
+              <button class="button" onclick="copyText('회의록 링크', 'https://docs.google.com/document/d/1yYhHOHUtDgIicDYtL3Ij-D7wepc3pPPAtvQnNLqnDZo/edit?usp=sharing')">
+                링크 복사
+              </button>
+            </div>
+          </article>
+
+          <article class="card resource-card reveal">
+            <div>
+              <div class="resource-meta">
+                <span class="tag">Google Drive</span>
+                <span class="tag">교육자료</span>
+              </div>
+              <h3 style="margin-top:16px;">이애본 교수 교육 파일 공유폴더</h3>
+              <p>
+                교육 중 필요한 발표자료, 실습 파일, 결과물 등을 이 폴더에서 주고받습니다.
+                파일을 올리거나 내려받을 때는 아래 버튼을 눌러 Google Drive 폴더를 직접 여세요.
+              </p>
+            </div>
+
+            <div class="resource-actions">
+              <a class="button dark"
+                 href="https://drive.google.com/drive/u/0/folders/1ko5T4wsWk9Le2ggKQ6z-Yv3ONaByk4fl"
+                 target="_blank" rel="noopener noreferrer">
+                파일 업로드 / 다운로드
+              </a>
+              <button class="button" onclick="copyText('공유폴더 링크', 'https://drive.google.com/drive/u/0/folders/1ko5T4wsWk9Le2ggKQ6z-Yv3ONaByk4fl')">
+                폴더 링크 복사
+              </button>
+            </div>
+          </article>
+        </div>
+
+        <div class="notice reveal">
+          <strong>파일 업로드 안내:</strong>
+          이 정적 HTML 페이지 자체에서는 Google 계정 권한을 대신 처리할 수 없으므로,
+          실제 업로드·다운로드는 위 버튼으로 지정된 Google Drive 폴더를 연 뒤 진행합니다.
+          팀원에게 해당 폴더의 편집 권한이 부여되어 있어야 파일 업로드가 가능합니다.
+          추후 Google Drive API와 OAuth를 연결하면 웹페이지 안에서 직접 업로드하는 기능으로 확장할 수 있습니다.
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================
+         진행률 그래프
+         - 실제 값은 아래 JS의 projectData만 수정하면 됩니다.
+         ====================================================== -->
+    <section class="section" id="progress">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <div class="section-kicker">Progress</div>
+            <h2>프로젝트 진행률</h2>
+          </div>
+          <p class="section-desc">
+            전체 진행률과 단계별 누적 진행률을 함께 보여줍니다.
+            샘플 데이터는 페이지 하단 JavaScript의 <b>projectData</b>에서 수정할 수 있습니다.
+          </p>
+        </div>
+
+        <div class="progress-layout">
+          <article class="card progress-card reveal">
+            <div class="section-kicker">Overall</div>
+            <h3>전체 프로젝트</h3>
+            <div class="progress-number"><span id="overallProgress">0</span>%</div>
+            <p id="progressMessage">프로젝트 진행 상황을 계산하고 있습니다.</p>
+
+            <div class="progress-track" aria-label="전체 프로젝트 진행률">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <small>
+              기준: 각 업무 단계의 진행률 평균
+            </small>
+          </article>
+
+          <article class="card progress-card reveal">
+            <div class="section-kicker">Trend</div>
+            <h3>단계별 진행 그래프</h3>
+            <div class="chart-wrap">
+              <!-- 외부 차트 라이브러리 없이 Canvas로 직접 그립니다. -->
+              <canvas id="progressChart" aria-label="프로젝트 단계별 진행률 그래프"></canvas>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================
+         간트차트
+         - JS의 ganttTasks 배열에서 업무명 / 시작주차 / 종료주차 / 상태 수정
+         - 현재는 12주 단위 샘플입니다.
+         ====================================================== -->
+    <section class="section" id="schedule">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <div class="section-kicker">Gantt Chart</div>
+            <h2>프로젝트 일정 관리</h2>
+          </div>
+          <p class="section-desc">
+            12주 기준 샘플 간트차트입니다. 실제 일정에 맞춰 업무명과 시작/종료 주차를 수정하세요.
+          </p>
+        </div>
+
+        <div class="card reveal">
+          <div class="gantt-shell">
+            <div class="gantt" id="ganttChart"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================
+         협업 가이드
+         ====================================================== -->
+    <section class="section" id="guide">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <div class="section-kicker">Team Guide</div>
+            <h2>30명 협업 운영 원칙</h2>
+          </div>
+          <p class="section-desc">
+            문서가 많아질수록 저장 위치와 작성 규칙을 단순하게 유지하는 것이 중요합니다.
+          </p>
+        </div>
+
+        <div class="guide-grid">
+          <article class="card reveal">
+            <div class="guide-number">01</div>
+            <h3>회의는 대표 문서에 기록</h3>
+            <p>
+              별도 개인 문서를 만들기보다 대표 회의록에 날짜별로 기록하고
+              결정사항·담당자·기한을 명시합니다.
+            </p>
+          </article>
+
+          <article class="card reveal">
+            <div class="guide-number">02</div>
+            <h3>교육 파일은 지정 폴더 사용</h3>
+            <p>
+              파일 공유 경로를 하나로 통일해 자료 누락을 막습니다.
+              파일명 앞에 날짜나 팀명을 붙이는 방식을 권장합니다.
+            </p>
+          </article>
+
+          <article class="card reveal">
+            <div class="guide-number">03</div>
+            <h3>일정·진행률은 주기적으로 갱신</h3>
+            <p>
+              간트차트와 단계별 진행률은 주 1회 이상 업데이트하여
+              모든 참여자가 같은 상태를 볼 수 있도록 관리합니다.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-inner">
+      <div>
+        <strong>Project Collaboration Dashboard</strong>
+        <div class="footer-note">GitHub Pages 배포를 기준으로 만든 단일 HTML 파일입니다.</div>
+      </div>
+      <div class="footer-note">회의록 · 파일공유 · 일정 · 진행률</div>
+    </div>
+  </footer>
+
+  <script>
+    /* =========================================================
+       [수정 포인트 1] 프로젝트 기본 데이터
+       ---------------------------------------------------------
+       단계 이름과 진행률을 바꾸면 좌측 전체 진행률과
+       우측 Canvas 그래프가 자동으로 변경됩니다.
+       ========================================================= */
+    const projectData = [
+      { name: "기획", progress: 100 },
+      { name: "자료수집", progress: 82 },
+      { name: "교육진행", progress: 64 },
+      { name: "실습", progress: 48 },
+      { name: "결과정리", progress: 26 },
+      { name: "최종공유", progress: 10 }
+    ];
+
+    /* =========================================================
+       [수정 포인트 2] 간트차트 데이터
+       ---------------------------------------------------------
+       start, end는 1~12주 사이의 주차입니다.
+       done=true 이면 완료 업무처럼 Sage 컬러로 표시됩니다.
+       ========================================================= */
+    const ganttTasks = [
+      { name: "프로젝트 기획", start: 1, end: 2, done: true },
+      { name: "자료 구조 정리", start: 1, end: 3, done: true },
+      { name: "교수 교육 진행", start: 3, end: 7, done: false },
+      { name: "팀별 실습", start: 5, end: 9, done: false },
+      { name: "중간 결과 리뷰", start: 7, end: 8, done: false },
+      { name: "보완 및 통합", start: 8, end: 11, done: false },
+      { name: "최종 결과 공유", start: 11, end: 12, done: false }
+    ];
+
+    /* 현재 위치를 강조하고 싶을 때 1~12 중 값을 넣으세요.
+       예: const currentWeek = 5;
+       강조를 원하지 않으면 null.
+    */
+    const currentWeek = 5;
+
+    /* 프로젝트 인원 수 */
+    const memberCount = 30;
+
+    /* =========================================================
+       모바일 메뉴
+       ========================================================= */
+    const menuButton = document.getElementById("menuButton");
+    const navLinks = document.getElementById("navLinks");
+
+    menuButton.addEventListener("click", () => {
+      navLinks.classList.toggle("open");
+    });
+
+    navLinks.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", () => navLinks.classList.remove("open"));
+    });
+
+    /* =========================================================
+       30명 팀원 점 생성
+       ========================================================= */
+    const teamDots = document.getElementById("teamDots");
+
+    for (let i = 0; i < memberCount; i++) {
+      const dot = document.createElement("div");
+      dot.className = "team-dot";
+      dot.title = `참여자 ${i + 1}`;
+      teamDots.appendChild(dot);
+    }
+
+    /* =========================================================
+       진행률 계산 및 애니메이션
+       ========================================================= */
+    const averageProgress = Math.round(
+      projectData.reduce((sum, item) => sum + item.progress, 0) / projectData.length
+    );
+
+    const progressNumber = document.getElementById("overallProgress");
+    const progressFill = document.getElementById("progressFill");
+    const progressMessage = document.getElementById("progressMessage");
+
+    function animateNumber(target) {
+      let current = 0;
+      const duration = 900;
+      const startTime = performance.now();
+
+      function update(now) {
+        const ratio = Math.min((now - startTime) / duration, 1);
+        current = Math.round(target * ratio);
+        progressNumber.textContent = current;
+
+        if (ratio < 1) requestAnimationFrame(update);
+      }
+
+      requestAnimationFrame(update);
+    }
+
+    function setProgressText(progress) {
+      if (progress >= 80) {
+        progressMessage.textContent = "마무리 단계입니다. 남은 작업과 최종 검토 항목을 집중 관리하세요.";
+      } else if (progress >= 50) {
+        progressMessage.textContent = "프로젝트가 본격 진행 중입니다. 중간 산출물과 담당자별 이슈를 점검하세요.";
+      } else {
+        progressMessage.textContent = "초기 진행 단계입니다. 일정과 자료 공유 기준을 먼저 안정화하세요.";
+      }
+    }
+
+    setTimeout(() => {
+      animateNumber(averageProgress);
+      progressFill.style.width = `${averageProgress}%`;
+      setProgressText(averageProgress);
+    }, 280);
+
+    /* =========================================================
+       Canvas 진행률 그래프
+       - 외부 라이브러리 없이 직접 그림
+       ========================================================= */
+    function drawProgressChart() {
+      const canvas = document.getElementById("progressChart");
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+
+      const ctx = canvas.getContext("2d");
+      ctx.scale(dpr, dpr);
+
+      const width = rect.width;
+      const height = rect.height;
+      const padding = { top: 24, right: 20, bottom: 48, left: 42 };
+      const chartW = width - padding.left - padding.right;
+      const chartH = height - padding.top - padding.bottom;
+
+      const darkGreen = "#12372A";
+      const sage = "#A3B18A";
+      const ivory = "#F5F1E8";
+
+      ctx.clearRect(0, 0, width, height);
+
+      // 가이드 라인
+      ctx.lineWidth = 1;
+      ctx.font = '12px "Nanum Gothic"';
+      ctx.textAlign = "right";
+      ctx.textBaseline = "middle";
+
+      [0, 25, 50, 75, 100].forEach(value => {
+        const y = padding.top + chartH - (value / 100) * chartH;
+
+        ctx.strokeStyle = "rgba(18,55,42,0.10)";
+        ctx.beginPath();
+        ctx.moveTo(padding.left, y);
+        ctx.lineTo(width - padding.right, y);
+        ctx.stroke();
+
+        ctx.fillStyle = "rgba(18,55,42,0.65)";
+        ctx.fillText(`${value}%`, padding.left - 8, y);
+      });
+
+      const slot = chartW / projectData.length;
+      const barWidth = Math.min(42, slot * 0.55);
+
+      projectData.forEach((item, index) => {
+        const x = padding.left + slot * index + slot / 2 - barWidth / 2;
+        const barH = (item.progress / 100) * chartH;
+        const y = padding.top + chartH - barH;
+
+        // 바 배경
+        ctx.fillStyle = "rgba(163,177,138,0.28)";
+        roundRect(ctx, x, padding.top, barWidth, chartH, 9);
+        ctx.fill();
+
+        // 실제 진행 바
+        ctx.fillStyle = darkGreen;
+        roundRect(ctx, x, y, barWidth, barH, 9);
+        ctx.fill();
+
+        // 퍼센트
+        ctx.fillStyle = darkGreen;
+        ctx.font = '700 12px "Nanum Gothic"';
+        ctx.textAlign = "center";
+        ctx.textBaseline = "bottom";
+        ctx.fillText(`${item.progress}%`, x + barWidth / 2, y - 7);
+
+        // 단계명
+        ctx.fillStyle = darkGreen;
+        ctx.font = '12px "Nanum Gothic"';
+        ctx.textBaseline = "top";
+        ctx.fillText(item.name, x + barWidth / 2, height - padding.bottom + 12);
+      });
+    }
+
+    function roundRect(ctx, x, y, width, height, radius) {
+      const r = Math.min(radius, width / 2, height / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + width, y, x + width, y + height, r);
+      ctx.arcTo(x + width, y + height, x, y + height, r);
+      ctx.arcTo(x, y + height, x, y, r);
+      ctx.arcTo(x, y, x + width, y, r);
+      ctx.closePath();
+    }
+
+    window.addEventListener("resize", drawProgressChart);
+    drawProgressChart();
+
+    /* =========================================================
+       간트차트 생성
+       ========================================================= */
+    function buildGantt() {
+      const gantt = document.getElementById("ganttChart");
+      gantt.innerHTML = "";
+
+      // 헤더
+      const titleCell = document.createElement("div");
+      titleCell.className = "gantt-cell gantt-head gantt-task-name";
+      titleCell.textContent = "업무";
+      gantt.appendChild(titleCell);
+
+      for (let week = 1; week <= 12; week++) {
+        const cell = document.createElement("div");
+        cell.className = "gantt-cell gantt-head";
+        if (week === currentWeek) cell.classList.add("gantt-today");
+        cell.textContent = `${week}주`;
+        gantt.appendChild(cell);
+      }
+
+      // 업무 행
+      ganttTasks.forEach(task => {
+        const nameCell = document.createElement("div");
+        nameCell.className = "gantt-cell gantt-task-name";
+        nameCell.textContent = task.name;
+        gantt.appendChild(nameCell);
+
+        for (let week = 1; week <= 12; week++) {
+          const cell = document.createElement("div");
+          cell.className = "gantt-cell";
+          if (week === currentWeek) cell.classList.add("gantt-today");
+
+          if (week >= task.start && week <= task.end) {
+            const bar = document.createElement("div");
+            bar.className = `gantt-bar ${task.done ? "done" : ""}`;
+
+            // 막대 전체 길이는 여러 셀에 걸치지 않고 각 주차 셀 안에 이어 붙이는 방식.
+            // 시작 셀에만 텍스트를 넣어 복잡도를 낮춥니다.
+            if (week === task.start) {
+              bar.textContent = task.done ? "완료" : "진행";
+            }
+
+            cell.appendChild(bar);
+          }
+
+          gantt.appendChild(cell);
+        }
+      });
+    }
+
+    buildGantt();
+
+    /* =========================================================
+       링크 복사 기능
+       ========================================================= */
+    async function copyText(label, text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        alert(`${label}가 복사되었습니다.`);
+      } catch (error) {
+        // 일부 브라우저/HTTP 환경에서는 clipboard API가 제한될 수 있습니다.
+        window.prompt(`${label}를 복사하세요.`, text);
+      }
+    }
+
+    /* =========================================================
+       스크롤 등장 효과
+       ========================================================= */
+    const revealElements = document.querySelectorAll(".reveal");
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    revealElements.forEach(element => observer.observe(element));
+
+    /* =========================================================
+       현재 보고 있는 섹션에 따라 상단 메뉴 강조
+       ========================================================= */
+    const sections = document.querySelectorAll("main section[id]");
+    const navAnchors = document.querySelectorAll(".nav-links a");
+
+    window.addEventListener("scroll", () => {
+      let currentSection = "";
+
+      sections.forEach(section => {
+        const top = section.offsetTop - 120;
+        if (window.scrollY >= top) {
+          currentSection = section.getAttribute("id");
+        }
+      });
+
+      navAnchors.forEach(anchor => {
+        anchor.classList.toggle(
+          "active",
+          anchor.getAttribute("href") === `#${currentSection}`
+        );
+      });
+    });
+  </script>
+</body>
+</html>
